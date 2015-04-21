@@ -1,20 +1,19 @@
-/* 	dynamicArray.h : Dynamic Array implementation. */
-#include<math.h>
-
+/* 	dynArr.h : Dynamic Array implementation. */
 #ifndef DYNAMIC_ARRAY_INCLUDED
 #define DYNAMIC_ARRAY_INCLUDED 1
-
+#include "type.h"
 
 # ifndef TYPE
-# define TYPE double
-# define TYPE_SIZE sizeof(double)
+# define TYPE      void*
 # endif
 
-# ifndef EQ
-# define EQ(A, B) (fabs(A - B) < 10e-7)
-# endif
+/* function used to compare two TYPE values to each other, define this in your compare.c file */
+int compare(TYPE left, TYPE right);
+/* function used to print TYPE values, define this in your compare.c file */
+void print_type(TYPE curval);
 
 typedef struct DynArr DynArr;
+struct bag;
 
 /* Dynamic Array Functions */
 DynArr *createDynArr(int cap);
@@ -38,4 +37,17 @@ void popDynArr(DynArr *v);
 int containsDynArr(DynArr *v, TYPE val);
 void removeDynArr(DynArr *v, TYPE val);
 
+
+/* Heap-based Priority Queue Interface */
+TYPE getMinHeap(DynArr *heap);
+void addHeap(DynArr *heap, TYPE node);
+void removeMinHeap(DynArr *heap);
+void sortHeap(DynArr *heap);
+
+
+/* Utility function*/
+void copyDynArr(DynArr *source, DynArr *destination);
+
+
 #endif
+
