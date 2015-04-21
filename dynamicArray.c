@@ -327,6 +327,151 @@ void removeDynArr(DynArr *v, TYPE val)
 }
 
 
+/* ************************************************************************
+	Heap-based Priority Queue Implementation
+************************************************************************ */
+
+/* internal function prototypes */
+int _smallerIndexHeap(DynArr *heap, int i, int j);
+void _adjustHeap(DynArr *heap, int max, int pos);
+
+/*	Get the index of the smaller node between two nodes in a heap
+
+	param: 	heap	pointer to the heap
+	param:	i	index of one node
+	param:	j	index of other node
+	pre:	i < size and j < size
+	ret:	the index of the smaller node
+*/
+int _smallerIndexHeap(DynArr *heap, int i, int j)
+{
+    if (compare(getDynArr(heap, i), getDynArr(heap, j)) == -1)
+        return i;
+
+    return j;
+}
+
+/*	Get the first node, which has the min priority, from the heap
+
+	param: 	heap	pointer to the heap
+	pre:	heap is not empty
+	ret:	value of first node
+*/
+TYPE getMinHeap(DynArr *heap)
+{
+    assert(sizeDynArr(heap) > 0);
+    return getDynArr(heap, 0);
+}
+
+/*	Add a node to the heap
+
+	param: 	heap	pointer to the heap
+	param: 	node	node to be added to the heap
+	pre:	heap is not null
+	post:	node is added to the heap
+*/
+void addHeap(DynArr *heap, TYPE val)
+{
+    int parent;
+    int pos = sizeDynArr(heap);
+    addDynArr(heap, val); /* adds to end – now need to adjust position */
+
+    while (pos !=0)
+    {
+        parent = (pos-1)/2;
+        if (compare(getDynArr(heap, pos), getDynArr(heap,parent)) == -1)
+        {
+            swapDynArr(heap, parent, pos);
+            pos = parent;
+        }
+        else return;
+    }
+}
+
+/*	Adjust heap to maintain heap property
+
+	param: 	heap	pointer to the heap
+	param: 	max		index to adjust up to  (but not included)
+	param: 	pos		position index where the adjustment starts
+	pre:	max <= size
+	post:	heap property is maintained for nodes from index pos to index max-1  (ie. up to, but not including max)
+*/
+void _adjustHeap(DynArr *heap, int max, int pos)
+{
+   int leftIndex = pos*2+1;
+   int rightIndex =pos*2+2;
+
+   assert(max<= sizeDynArr(heap));
+
+   if(rightIndex < max)
+   {
+        int minIndex = _smallerIndexHeap(heap, rightIndex, leftIndex);
+        if(compare(getDynArr(heap, minIndex), getDynArr(heap, pos))<0)
+        {
+            swapDynArr(heap, pos, minIndex);
+            _adjustHeap(heap, max, minIndex);
+        }
+   }
+   else if(leftIndex < max)
+   {
+       if(compare(getDynArr(heap, leftIndex), getDynArr(heap, pos)) < 0)
+       {
+           swapDynArr(heap, pos, leftIndex);
+           _adjustHeap(heap, max, leftIndex);
+       }
+   }
+ }
+
+/*	Remove the first node, which has the min priority, from the heap
+
+	param: 	heap	pointer to the heap
+	pre:	heap is not empty
+	post:	the first node is removed from the heap
+*/
+void removeMinHeap(DynArr *heap)
+{
+    int last = sizeDynArr(heap)-1;
+    /*assert(last != 0);  make sure we have at least one element */
+                           /* Copy the last element to the first  position */
+    putDynArr(heap, 0, getDynArr(heap, last));
+    removeAtDynArr(heap, last);       /* Remove last element.*/
+    _adjustHeap(heap, last, 0);/* Rebuild heap */
+}
+
+/* builds a heap from an arbitrary dynArray
+
+    param: v    dynamicArray
+    pre:    v is not empty
+    post: v is a proper heap
+*/
+
+void _buildHeap(DynArr *heap)
+{
+    int max = sizeDynArr(heap);
+    int i;
+
+    for(i = max/2-1; i >= 0; i--)
+        _adjustHeap(heap, max, i);
+}
+/*
+    In-place sort of the heap
+
+    param: heap     pointer to the heap
+    pre: heap is not empty
+    post: the dynArr is in reverse sorted order
+*/
+
+void sortHeap(DynArr *heap)
+{
+   int i;
+
+    _buildHeap(heap);
+    for(i = sizeDynArr(heap)-1; i > 0;i--)
+    {
+        swapDynArr(heap, 0, i);
+        _adjustHeap(heap, i, 0);
+    }
+}
 
 	
 
